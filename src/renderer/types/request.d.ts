@@ -19,6 +19,6 @@ declare module '@renderer/utils/request' {
     [key: string]: unknown
   }
 
-  export const httpFetch: <T = unknown>(url: string, options?: HttpFetchOptions) => HttpFetchResult<T>
-  export const cancelHttp: (requestObj: { abort?: () => void } | null | undefined) => void
+  export function httpFetch<T = unknown>(url: string, options?: HttpFetchOptions): HttpFetchResult<T>
+  export function cancelHttp(requestObj?: { abort?: () => void }): void
 }
