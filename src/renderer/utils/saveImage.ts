@@ -50,9 +50,11 @@ const resolveImageData = async(url: string) => {
 
   if (/^https?:/i.test(url) || url.startsWith('//')) {
     const requestUrl = url.startsWith('//') ? `https:${url}` : url
-    const response = await httpFetch(requestUrl, { method: 'get', timeout: 15000 }).promise
+    const response = await httpFetch(requestUrl, { method: 'get', timeout: 15000, format: 'buffer' }).promise
+    if (response.statusCode && response.statusCode >= 400) throw new Error(`HTTP ${response.statusCode}`)
     const raw = (response as { raw?: Buffer | string }).raw
     const buffer = Buffer.isBuffer(raw) ? raw : Buffer.from(raw ?? '')
+    if (!buffer.length) throw new Error('empty response')
     const ext = getExtFromUrl(requestUrl) || getExtFromMime(response.headers?.['content-type'] as string | undefined)
     return { buffer, ext }
   }
