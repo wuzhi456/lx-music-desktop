@@ -2,12 +2,7 @@ const fs = require('fs')
 const fsPromises = require('fs').promises
 const path = require('path')
 const { Arch } = require('electron-builder')
-const loadNodeAbi = async () => {
-  const mod = await import('node-abi')
-  const getAbi = mod.getAbi ?? mod.default?.getAbi
-  if (!getAbi) throw new Error('Unable to locate getAbi function in node-abi module. This may indicate an incompatible version or module structure.')
-  return getAbi
-}
+const nodeAbi = require('node-abi')
 
 const better_sqlite3_fileNameMap = {
   [Arch.x64]: 'linux-x64',
@@ -59,8 +54,7 @@ const replaceQrcDecodeLib = async(electronNodeAbi, platform, arch) => {
 module.exports = async(context) => {
   const { electronPlatformName, arch } = context
   const electronVersion = context.packager?.info?._framework?.version ?? require('../package.json').devDependencies.electron.replace(/^[^\d]*?(\d+)/, '$1')
-  const getAbi = await loadNodeAbi()
-  const electronNodeAbi = getAbi(electronVersion, 'electron')
+  const electronNodeAbi = nodeAbi.getAbi(electronVersion, 'electron')
   await replaceQrcDecodeLib(electronNodeAbi, electronPlatformName, arch)
   if (electronPlatformName !== 'linux' || process.env.FORCE) return
   const bindingFilePath = path.join(__dirname, '../node_modules/better-sqlite3/binding.gyp')
