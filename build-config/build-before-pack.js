@@ -2,10 +2,10 @@ const fs = require('fs')
 const fsPromises = require('fs').promises
 const path = require('path')
 const { Arch } = require('electron-builder')
-const loadNodeAbi = async() => {
+const loadNodeAbi = async () => {
   const mod = await import('node-abi')
   const getAbi = mod.getAbi ?? mod.default?.getAbi
-  if (!getAbi) throw new Error('node-abi getAbi not found')
+  if (!getAbi) throw new Error('Unable to locate getAbi function in node-abi module. This may indicate an incompatible version or module structure.')
   return getAbi
 }
 
